@@ -16,8 +16,11 @@
     "menubar",
     "transports"
   ],
-  "author": "Florent Youinou <florent.youinou@hotmail.fr>",
-  "license": "ISC",
+  "author": {
+    "name": "Florent Youinou",
+    "email": "florent.youinou@hotmail.fr"
+  },
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/T4ze/TakeMeHome/issues"
   },
