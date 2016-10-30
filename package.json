@@ -1,0 +1,24 @@
+{
+  "name": "takemehome",
+  "version": "0.1.0",
+  "description": "Get transports around you anywhere",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/T4ze/TakeMeHome.git"
+  },
+  "keywords": [
+    "electron",
+    "menubar",
+    "transports"
+  ],
+  "author": "florent youinou",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/T4ze/TakeMeHome/issues"
+  },
+  "homepage": "https://github.com/T4ze/TakeMeHome#readme"
+}
