@@ -1,19 +1,32 @@
 $(window).on('load', function(){
   sessionStorage.setItem('navitia_token', process.env.NAVITIA_TOKEN);
+  var transports = require('./transports.json');
 
   var goHome = function() {
     var navitia_token = sessionStorage.getItem("navitia_token");
     console.log(navitia_token);
     console.log("test");
 
+/*
     var coord_from = {
       long: "2.37809900000002",
-      lat :"48.8037874"
+      lat: "48.8037874"
     };
     var coord_to = {
       long: "2.387552199999959",
       lat: "48.84978859999999"
     };
+*/
+
+    var coord_from = {
+      long: "2.382761",
+      lat: "48.880950"
+    };
+    var coord_to = {
+      long: "2.365319",
+      lat: "48.880946"
+    };
+
 
     $.ajax({
       type: "GET",
@@ -46,8 +59,8 @@ $(window).on('load', function(){
 
               if (elt.display_informations) {
                 tmp.informations = {
-                  mode: elt.display_informations.commercial_mode,
-                  line: elt.display_informations.code
+                  mode: elt.display_informations.commercial_mode.toLowerCase(),
+                  line: elt.display_informations.code.toLowerCase()
                 };
               }
 
@@ -72,16 +85,21 @@ $(window).on('load', function(){
 
 
           var content = "<div>";
+
           parts.forEach(function (part, i) {
             if (part.type == "waiting" || part.type == "transfer")
               return;
 
             if(part.informations) {
-              content += part.informations.mode;
-              content += " ";
-              content += part.informations.line;
+              if (transports[part.informations.mode]) {
+                content += '<img class="icon" src="http://www.ratp.fr/itineraires/picto/' + part.informations.mode + '/' + part.informations.line + '.png" />';
+              } else {
+                content += part.informations.mode;
+                content += " ";
+                content += part.informations.line;
+              }
             } else {
-              content += "walk";
+              content += '<img class="icon" src="img/walk.png"/>';
             }
 
             console.log(i + " " + parts.length);
