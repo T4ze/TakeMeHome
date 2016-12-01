@@ -2,15 +2,40 @@
 <head>
   <title>TakeMeHome</title>
   <meta charset="utf-8">
-
+  <link href="css/bootstrap.min.css" rel="stylesheet">
 <style>
 img.icon {
   width: 16px;
   height: 16px;
 }
+
+.input-group {
+  width: 100%;
+}
+
+.input-group-addon {
+  width: 40px;
+}
 </style>
 </head>
 <body>
+
+<div class="col-xs-12">
+  <div class="col-xs-11">
+    <div class="input-group input-group-sm">
+      <span class="input-group-addon" id="basic-addon1">De</span>
+      <input id="fromAdress" type="text" class="form-control" placeholder="Adresse de départ" aria-describedby="basic-addon1">
+    </div>
+    <div class="input-group input-group-sm">
+      <span class="input-group-addon" id="basic-addon2">À</span>
+      <input id="toAdress" type="text" class="form-control" placeholder="Adresse d'arrivé" aria-describedby="basic-addon2">
+    </div>
+    <button id="validateRoute" type="button" class="btn btn-default pull-right">Go</button>
+  </div>
+  <div class="col-xs-1" style="vertical-align: middle">
+    I
+  </div>
+</div>
 
 <div id="res" style="width: 100%; text-align: center">
 </div>
@@ -22,9 +47,72 @@ img.icon {
 
 <!-- normal script imports etc  -->
 <script type="text/javascript" src="js/jquery.min.js"></script>
+<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAfIKgliacOOeWvA766IzKERq70_Kadf7o&amp;libraries=places" type="text/javascript"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+
 <script type="text/javascript" src="js/main.js"></script>
 
-<!-- Insert this line after script imports -->
+<script type="text/javascript">
+var autocompleteFrom, autocompleteTo;
+
+function initialize() {
+  var input = document.getElementById('fromAdress');
+  autocompleteFrom = new google.maps.places.Autocomplete(input);
+  google.maps.event.addListener(autocompleteFrom, 'place_changed', function () {
+    var place = autocompleteFrom.getPlace();
+    console.log("from : place", place.name);
+    console.log("from : lat", place.geometry.location.lat(), "lng", place.geometry.location.lng());
+  });
+
+  var input2 = document.getElementById('toAdress');
+  autocompleteTo = new google.maps.places.Autocomplete(input2);
+  google.maps.event.addListener(autocompleteTo, 'place_changed', function () {
+    var place = autocompleteTo.getPlace();
+    console.log("to : place", place.name);
+    console.log("to : lat", place.geometry.location.lat(), "lng", place.geometry.location.lng());
+  });
+}
+google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+
+<script>
+$("#validateRoute").on("click", function () {
+  var place;
+  var stops = {
+      from : {
+        long : 0,
+        lat : 0,
+      },
+      to : {
+        long : 0,
+        lat : 0,
+      }
+  };
+
+  // from
+  place = autocompleteFrom.getPlace();
+  if (!place || place.name == "")
+    return;
+
+  stops.from = {
+    long : place.geometry.location.lng(),
+    lat : place.geometry.location.lat(),
+  }
+
+  // to
+  place = autocompleteTo.getPlace();
+  if (!place || place.name == "")
+    return;
+
+  stops.to = {
+    long : place.geometry.location.lng(),
+    lat : place.geometry.location.lat(),
+  }
+
+  findRoutes(stops);
+});
+</script>
+
 <script>if (window.module) module = window.module;</script>
 </body>
 </html>
