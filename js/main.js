@@ -29,10 +29,12 @@ function findRoutes(stops) {
 
 
       $("#res").html("");
-      data.journeys.forEach(function (journey) {
-        //console.log(journey);
+      data.journeys.forEach(function (journey, index) {
+        console.log(journey);
+        console.log("=====================================================");
         //var parts = [];
         //console.log(journey.sections[0]);
+        console.log(((journey.duration - (journey.duration % 60)) / 60) + "m " + (journey.duration % 60) + "s");
 
         parts = journey.sections.reduce(function (result, elt) {
           if (elt.type != "waiting" && elt.type != "transfer") {
@@ -71,11 +73,12 @@ function findRoutes(stops) {
         }, []);
 
 
-        var content = "<div>";
+        var content = "";
 
         parts.forEach(function (part, i) {
           if (part.type == "waiting" || part.type == "transfer")
             return;
+
 
           if(part.informations) {
             if (transports[part.informations.mode]) {
@@ -92,9 +95,22 @@ function findRoutes(stops) {
           if (i < parts.length - 1)
             content += " > ";
         });
-        content += "<br><br></div>";
 
-        $("#res").append(content);
+
+        $('#tabs').append('<li role="presentation"><a href="#tab' + index + '" aria-controls="tab' + index + '" role="tab" data-toggle="tab"><div class="col-xs-12">'
+          + '<div class="col-xs-9">'
+            + content
+          + '</div>'
+          + '<div class="col-xs-3">'
+            + ((journey.duration - (journey.duration % 60)) / 60) + "m "
+            + (journey.duration % 60) + 's'
+          + '</div>'
+        + '</div></a></li>'
+        );
+
+        $('#tabs-content').append('<div role="tabpanel" class="tab-pane" id="tab' + index + '"></div>');
+
+        $('#tab' + index).append('<div></div>');
 
         //http://www.ratp.fr/itineraires/picto/tramway/t3a.png
         //console.log(JSON.stringify(parts, undefined, 2));
