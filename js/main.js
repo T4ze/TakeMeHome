@@ -1,4 +1,28 @@
+/*var routes = {
+  stops: [],
+  duration: 0,
+  time_start: 0,
+  time_end: 0,
+  coord: {
+    start: {
+      lng: 0,
+      lat: 0,
+    },
+    end: {
+      lng: 0,
+      lat: 0,
+    }
+  }
+};
+*/
+
+
+var timeZone = 1;
+var routes = [];
+
+
 function findRoutes(stops) {
+  routes = [];
   sessionStorage.setItem('navitia_token', process.env.NAVITIA_TOKEN);
   var transports = require('./transports.json');
 
@@ -18,8 +42,8 @@ function findRoutes(stops) {
   $.ajax({
     type: "GET",
     url: "https://api.navitia.io/v1/journeys?"
-        + "from=" + stops.from.long + ";" + stops.from.lat
-        + "&to=" + stops.to.long + ";" + stops.to.lat + "&",
+        + "from=" + stops.from.lng + ";" + stops.from.lat
+        + "&to=" + stops.to.lng + ";" + stops.to.lat + "&",
     dataType: 'json',
     beforeSend: function(xhr) {
       xhr.setRequestHeader("Authorization", "Basic " + btoa(navitia_token + ":"));
@@ -31,86 +55,92 @@ function findRoutes(stops) {
       $("#res").html("");
       data.journeys.forEach(function (journey, index) {
         console.log(journey);
-        console.log("=====================================================");
-        //var parts = [];
-        //console.log(journey.sections[0]);
-        console.log(((journey.duration - (journey.duration % 60)) / 60) + "m " + (journey.duration % 60) + "s");
+        var currentRoute = {
+          stops: [],
+          duration: "",
+          time_start: getTime(journey.departure_date_time),
+          time_end: getTime(journey.arrival_date_time),
+          coord: stops
+        };
 
-        parts = journey.sections.reduce(function (result, elt) {
-          if (elt.type != "waiting" && elt.type != "transfer") {
-            var tmp = {
-              time: {
-                departure: elt.departure_date_time,
-                arrival: elt.arrival_date_time
+
+        // Set route duration
+        var tmp = journey.duration;
+        if (tmp > 3600) {
+          currentRoute.duration += Math.floor(tmp / 3600) + "h ";
+          tmp %= 3600;
+        }
+        currentRoute.duration +=  Math.floor(tmp / 60) + "m";
+
+
+        currentRoute.stops = journey.sections.map(function (elt) {
+          if (elt.type == "public_transport" || elt.type == "street_network") {
+            return {
+              arrival_date_time: getTime(elt.arrival_date_time),
+              departure_date_time: getTime(elt.departure_date_time),
+              duration: elt.duration,
+              coords: {
+                from: {
+                  lng:  elt.geojson.coordinates[0][0],
+                  lat:  elt.geojson.coordinates[0][1],
+                },
+                to: {
+                  lng:  elt.geojson.coordinates[elt.geojson.coordinates.length - 1][0],
+                  lat:  elt.geojson.coordinates[elt.geojson.coordinates.length - 1][1],
+                }
               },
-              type: elt.type,
+              from: elt.from.name,
+              to: elt.to.name,
+              type: {
+                name: elt.type,
+                line: (elt.type != "public_transport") ? {} : {
+                  code: elt.display_informations.code.toLowerCase(),
+                  mode: elt.display_informations.commercial_mode.toLowerCase(),
+                  direction: elt.display_informations.direction,
+                },
+              },
             };
-
-            if (elt.display_informations) {
-              tmp.informations = {
-                mode: elt.display_informations.commercial_mode.toLowerCase(),
-                line: elt.display_informations.code.toLowerCase()
-              };
-            }
-
-            if (elt.from && elt.to) {
-              tmp.loc = {
-                from: { name: elt.from.name, },
-                to: { name: elt.to.name, },
-              };
-
-
-              if (elt.from.stop_point)
-                tmp.loc.from.coord = elt.from.stop_point.coord;
-              if  (elt.to.stop_point)
-                tmp.loc.to.coord = elt.to.stop_point.coord;
-            }
-
-            result.push(tmp);
           }
-
-          return result;
-        }, []);
-
+        }).filter(n => n);
 
         var content = "";
-
-        parts.forEach(function (part, i) {
-          if (part.type == "waiting" || part.type == "transfer")
-            return;
-
-
-          if(part.informations) {
-            if (transports[part.informations.mode]) {
-              content += '<img class="icon" src="http://www.ratp.fr/itineraires/picto/' + part.informations.mode + '/' + part.informations.line + '.png" />';
+        currentRoute.stops.forEach(function (part, i) {
+          if (part.type.name == "public_transport") {
+            if (transports[part.type.line.mode]) {
+              content += '<img class="icon" src="http://www.ratp.fr/itineraires/picto/' + part.type.line.mode + '/' + part.type.line.code + '.png" />';
             } else {
-              content += part.informations.mode;
+              content += part.type.line.mode;
               content += " ";
-              content += part.informations.line;
+              content += part.type.line.code;
             }
-          } else {
+          } else if (part.type.name == "street_network") {
             content += '<img class="icon" src="img/walk.png"/>';
           }
 
-          if (i < parts.length - 1)
+          if (i < currentRoute.stops.length - 1)
             content += " > ";
         });
 
 
-        $('#tabs').append('<li role="presentation"><a href="#tab' + index + '" aria-controls="tab' + index + '" role="tab" data-toggle="tab"><div class="col-xs-12">'
-          + '<div class="col-xs-9">'
+        $('#tabs').append('<li role="presentation" data-index="' + index + '"><a href="#tab' + index + '" aria-controls="tab' + index + '" role="tab" data-toggle="tab"><div class="col-xs-12 nopadding">'
+          + '<div class="col-xs-9 nopadding">'
             + content
           + '</div>'
           + '<div class="col-xs-3">'
             + ((journey.duration - (journey.duration % 60)) / 60) + "m "
-            + (journey.duration % 60) + 's'
           + '</div>'
         + '</div></a></li>'
         );
 
-        $('#tabs-content').append('<div role="tabpanel" class="tab-pane" id="tab' + index + '"></div>');
+        console.log(currentRoute);
+        routes.push(currentRoute);
 
-        $('#tab' + index).append('<div></div>');
+        //$('#tabs-content').append('<div role="tabpanel" class="tab-pane" id="tab' + index + '"></div>');
+        //$('#tab' + index).append('toto ' + index);
+
+
+
+
 
         //http://www.ratp.fr/itineraires/picto/tramway/t3a.png
         //console.log(JSON.stringify(parts, undefined, 2));
@@ -136,7 +166,17 @@ function findRoutes(stops) {
         */
         //console.log(journey);
         //console.log("---------------------");
+        console.log("=====================================================");
       });
     }
   });
+}
+
+
+function setData(index) {
+  console.log(routes[index]);
+}
+
+function getTime(s) {
+  return ((parseInt(s.substring(9, 11))) + timeZone) + ":" + s.substring(11, 13);
 }
