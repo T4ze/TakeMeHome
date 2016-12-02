@@ -3,53 +3,34 @@
   <title>TakeMeHome</title>
   <meta charset="utf-8">
   <link href="css/bootstrap.min.css" rel="stylesheet">
-<style>
-img.icon {
-  width: 16px;
-  height: 16px;
-}
-
-.input-group {
-  width: 100%;
-}
-
-.input-group-addon {
-  width: 40px;
-}
-
-ul#tabs {
-  padding: 0px;
-  list-style: none;
-}
-
-.nopadding {
-  padding: 0px;
-}
-
-
-</style>
+  <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
-
 <div>
-  <div>
-    <div class="col-xs-10 nopadding">
-      <div class="input-group input-group-sm">
-        <span class="input-group-addon" id="basic-addon1">De</span>
-        <input id="fromAdress" type="text" class="form-control" placeholder="Adresse de départ" aria-describedby="basic-addon1">
+  <div class="col-xs-12 nopadding" style="background-color: #9FA8DA">
+    <div class="col-xs-12 nopadding">
+      <div class="col-xs-11" style="padding-right: 0px;">
+        <div class="input-group input-group-sm">
+          <span class="input-group-addon" id="basic-addon1">De</span>
+          <input id="fromAdress" type="text" class="form-control" placeholder="Adresse de départ" aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group input-group-sm">
+          <span class="input-group-addon" id="basic-addon2">À</span>
+          <input id="toAdress" type="text" class="form-control" placeholder="Adresse d'arrivé" aria-describedby="basic-addon2">
+        </div>
+
       </div>
-      <div class="input-group input-group-sm">
-        <span class="input-group-addon" id="basic-addon2">À</span>
-        <input id="toAdress" type="text" class="form-control" placeholder="Adresse d'arrivé" aria-describedby="basic-addon2">
+      <div class="col-xs-1 text-center switch" style="vertical-align: middle">
+        <span class="glyphicon glyphicon-resize-vertical" aria-hidden="true"></span>
       </div>
-      <button id="validateRoute" type="button" class="btn btn-default pull-right">Go</button>
     </div>
-    <div class="col-xs-2" style="vertical-align: middle">
-      I
+    <div class="col-xs-12 text-center">
+      <button id="validateRoute" type="button" class="btn btn-default">Go</button>
     </div>
   </div>
 
-  <div>
+
+  <div class="col-xs-12 nopadding">
     <!-- Nav tabs -->
     <ul id="tabs">
     </ul>
@@ -61,148 +42,6 @@ ul#tabs {
 </div>
 
 
-<style>
-.route-detail {
-  position: absolute;
-  z-index: 5;
-  top: 0;
-  left: 0;
-  background-color: white;
-  display: none;
-  width: 100%;
-  height: 100%;
-}
-
-.route-detail.active {
-  display: block;
-}
-
-#closePopup, #print {
-  cursor: pointer;
-}
-
-.header {
-  padding: 10px 0px;
-  color: white;
-  background-color: #19a991;
-}
-
-#map {
-  padding: 0px;
-  height: 200px;
-}
-
-
-.route-body {
-  padding: 0px;
-  color: #b7b6b4;
-}
-
-.short-detail {
-  padding: 5px 0px;
-  background-color: #f5f4f2;
-}
-
-.detail {
-  padding: 10px 0px;
-}
-
-.route-line {
-  padding: 0px;
-  list-style: none;
-  position: relative;
-}
-
-.route-line:before {
-  top: 0;
-  bottom: 0;
-  position: absolute;
-  content: " ";
-  width: 4px;
-  /*background-color: #273689;*/
-  border-left: 2px dashed #273689;
-  left: 25%;
-  margin-left: -1.5px;
-}
-
-.route-line li {
-  position: relative;
-}
-
-li .content {
-  padding: 0px 10px;
-}
-
-li .info {
-  margin: 3px 0px;
-}
-
-
-.route-line li .line {
-  position: absolute;
-  top: 14px;
-  bottom: 0;
-  background-color: black;
-  content: " ";
-  width: 4px;
-  height: calc(100% + 20px);
-  left: calc(24% + 1px);
-}
-
-.route-line li .dot {
-  position: absolute;
-  top: 12px;
-  bottom: 0;
-  background-color: white;
-  border: 2px solid black;
-  border-radius: 50%;
-  content: " ";
-  width: 10px;
-  height: 10px;
-  left: calc(23% + 1px);
-}
-
-.route-line li .description {
-  background-color: #f4f4f4;
-  padding: 5px 10px;
-  position: relative;
-}
-
-.route-line li .description div {
-  border-bottom: 1px solid #bcbebe;
-}
-
-.route-line li .description div:last-child {
-  border-bottom: none;
-}
-
-.description .station {
-  font-size: 12px;
-  color: #646464;
-  text-transform: uppercase;
-}
-
-.time {
-  font-size: 12px;
-}
-
-.date {
-  padding-top: 7px;
-}
-
-.route-line li .description::before {
-  position: absolute;
-  top: 5px;
-  left: -8px;
-  display: inline-block;
-  border-top: 8px solid transparent;
-  border-right: 8px solid #f4f4f4;
-  border-left: 0 solid #f4f4f4;
-  border-bottom: 8px solid transparent;
-  content: " ";
-}
-
-</style>
 
 <div class="route-detail">
   <div class="col-xs-12 header">
@@ -214,76 +53,14 @@ li .info {
   </div>
   <div class="col-xs-12 route-body">
     <div class="col-xs-12 short-detail">
-        <div class="col-xs-2 col-xs-offset-2 text-right">
+        <div class="col-xs-2 col-xs-offset-1 text-right">
           <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
         </div>
-        <div class="col-xs-3 text-center" style="font-size: 11px; color: #43b492; border-left: 1px solid #d2d1cd">42 min</div>
-        <div class="col-xs-4" style="font-size: 11px; border-left: 1px solid #d2d1cd; ">14:26 > 15:08</div>
+        <div id="total-time" class="col-xs-3 text-center" style="font-size: 11px; color: #43b492; border-left: 1px solid #d2d1cd">42 min</div>
+        <div id="route-time" class="col-xs-4" style="font-size: 11px; border-left: 1px solid #d2d1cd; ">14:26 > 15:08</div>
     </div>
     <div class="col-xs-12 detail">
       <ul class="route-line">
-        <li>
-          <div class="dot"></div>
-          <div class="content">
-            <div class="date col-xs-2">14:26</div>
-            <div class="col-xs-offset-4 description">
-              <div class="station">Chatelet</div>
-            </div>
-          </div>
-          <div class="content info">
-            <div class="horaire" style="float: left">bus 186</div>
-            <div class="col-xs-offset-4">
-              <div class="time">8min</div>
-            </div>
-          </div>
-        </li>
-        <li>
-          <div class="dot" style="background-color: red; border-color: red"></div>
-          <div class="line" style="background-color: red"></div>
-          <div class="content">
-            <div class="date col-xs-2">14:26</div>
-            <div class="col-xs-offset-4 description">
-              <div class="station">Chatelet</div>
-            </div>
-          </div>
-          <div class="content info">
-            <div class="horaire" style="float: left">bus 186</div>
-            <div class="col-xs-offset-4">
-              <div class="time">8min</div>
-            </div>
-          </div>
-        </li>
-        <li>
-          <div class="dot" style="background-color: green; border-color: green"></div>
-          <div class="line" style="background-color: green"></div>
-          <div class="content">
-            <div class="date col-xs-2">14:26</div>
-            <div class="col-xs-offset-4 description">
-              <div class="station">Chatelet</div>
-            </div>
-          </div>
-          <div class="content info">
-            <div class="horaire" style="float: left">bus 186</div>
-            <div class="col-xs-offset-4">
-              <div class="time">8min</div>
-            </div>
-          </div>
-        </li>
-        <li>
-          <div class="dot"></div>
-          <div class="content">
-            <div class="date col-xs-2">14:26</div>
-            <div class="col-xs-offset-4 description">
-              <div class="station">Chatelet</div>
-            </div>
-          </div>
-          <div class="content info">
-            <div class="horaire" style="float: left">bus</div>
-            <div class="col-xs-offset-4">
-              <div class="time">8min</div>
-            </div>
-          </div>
-        </li>
       </ul>
     </div>
   </div>
@@ -303,8 +80,6 @@ li .info {
 <script>
 
 $(document).on("click", "#tabs li", function () {
-  console.log($(this).attr("data-index"));
-  //$(".route-detail").addClass("active");
   setData($(this).attr("data-index"));
 })
 
@@ -314,6 +89,7 @@ $(document).on("click", "#tabs li", function () {
 var autocompleteFrom, autocompleteTo;
 
 function initialize() {
+  console.log("init google map");
   var input = document.getElementById('fromAdress');
   autocompleteFrom = new google.maps.places.Autocomplete(input);
   google.maps.event.addListener(autocompleteFrom, 'place_changed', function () {
@@ -330,11 +106,13 @@ function initialize() {
     console.log("to : lat", place.geometry.location.lat(), "lng", place.geometry.location.lng());
   });
 
+/*
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 48.8037874, lng: 2.37809900000002},
     zoom: 12,
     disableDefaultUI: true
   });
+*/
 }
 google.maps.event.addDomListener(window, 'load', initialize);
 </script>
@@ -359,7 +137,7 @@ $("#validateRoute").on("click", function () {
     return;
 
   stops.from = {
-    long : place.geometry.location.lng(),
+    lng : place.geometry.location.lng(),
     lat : place.geometry.location.lat(),
   }
 
@@ -369,7 +147,7 @@ $("#validateRoute").on("click", function () {
     return;
 
   stops.to = {
-    long : place.geometry.location.lng(),
+    lng : place.geometry.location.lng(),
     lat : place.geometry.location.lat(),
   }
 
@@ -377,7 +155,7 @@ $("#validateRoute").on("click", function () {
 });
 
 
-
+/*
 $(function() {
   findRoutes({
     from : {
@@ -390,7 +168,7 @@ $(function() {
     }
   });
 })
-
+*/
 
 $("#closePopup").on("click", function () {
   $(".route-detail").removeClass("active");
