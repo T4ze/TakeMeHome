@@ -1,6 +1,11 @@
 var timeZone = 1;
 var routes = [];
-var transports = require('./transports.json');
+var transports = {
+  "metro": "RATP",
+  "tramway": "RATP",
+  "bus": "RATP",
+  "rer": "RATP"
+};
 
 function findRoutes(stops) {
   routes = [];
