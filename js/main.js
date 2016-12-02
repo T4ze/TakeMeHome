@@ -1,5 +1,6 @@
 var timeZone = 1;
 var routes = [];
+var markers = [];
 var transports = {
   "metro": "RATP",
   "tramway": "RATP",
@@ -9,6 +10,9 @@ var transports = {
 
 function findRoutes(stops) {
   routes = [];
+
+  // init
+  $('#tabs').html("");
 
   // Get Navitia token form env
   var navitia_token = process.env.NAVITIA_TOKEN;
@@ -106,7 +110,8 @@ function findRoutes(stops) {
 }
 
 
-function setData(index) {
+function setData(index, map) {
+  markers = [];
   console.log(routes[index]);
 
   // initialize
@@ -137,6 +142,8 @@ function setData(index) {
     </li>';
 
     $(".route-line").append(content);
+
+    setPath(v.coords, map, i);
   });
 
   // add last point (arrival)
@@ -194,3 +201,43 @@ function getTransport(v) {
   }
 }
 */
+
+function setPath(coord, map, i) {
+  console.log(coord);
+  var flightPlanCoordinates = [ coord.from, coord.to ];
+  var flightPath = new google.maps.Polyline({
+    path: flightPlanCoordinates,
+    geodesic: true,
+    strokeColor: getRandomColor(i),
+    strokeOpacity: 1.0,
+    strokeWeight: 2
+  });
+
+  markers.push(new google.maps.Marker({
+    position: coord.from,
+    map: map,
+    visible: false,
+  }));
+  markers.push(new google.maps.Marker({
+    position: coord.to,
+    map: map,
+    visible: false,
+  }));
+
+  flightPath.setMap(map);
+
+  var bounds = new google.maps.LatLngBounds();
+  for (var i = 0; i < markers.length; i++) {
+   bounds.extend(markers[i].getPosition());
+  }
+
+  map.fitBounds(bounds);
+  map.setZoom(map.getZoom() + 1);
+}
+
+function getRandomColor(i) {
+  var colors = [ '#356f74', '#b6ab46', '#65b0ed', '#441d74', '#FF0000', '#f4f4f4', '#000000', '#467448'  ];
+  //return colors[ Math.floor(Math.random() * colors.length) ];
+
+  return colors[i % colors.length];
+}

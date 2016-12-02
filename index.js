@@ -7,8 +7,8 @@ if (!process.env.NAVITIA_TOKEN) {
 
 /*
 var mb = menubar({
-    width: 300,
-    height: 300,
+    width: 350,
+    height: 400,
 });
 
 mb.on('ready', function ready () {
@@ -18,6 +18,7 @@ mb.on('after-create-window', function ready () {
   mb.window.openDevTools();
 })
 */
+
 
 const electron = require('electron');
 
@@ -30,10 +31,10 @@ const BrowserWindow = electron.BrowserWindow;
 
 function createWindow() {
 mainWindow = new BrowserWindow({
-        'minWidth': 830,
-        'minHeight': 600,
-        'width': 1000,
-        'height': 600
+        'minWidth': 350,
+        'minHeight': 400,
+        'width': 350,
+        'height': 400
     });
 
     mainWindow.loadURL(`file://${__dirname}/index.html`);

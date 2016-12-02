@@ -1,10 +1,15 @@
 
 $(document).on("click", "#tabs li", function () {
-  setData($(this).attr("data-index"));
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: {lat: 48.8037874, lng: 2.37809900000002},
+    zoom: 12,
+    disableDefaultUI: true
+  }, { maxZoom: 10 });
+  setData($(this).attr("data-index"), map);
 })
 
 
-var autocompleteFrom, autocompleteTo;
+var autocompleteFrom, autocompleteTo, map;
 
 function initialize() {
   console.log("init google map");
@@ -24,6 +29,22 @@ function initialize() {
     console.log("to : lat", place.geometry.location.lat(), "lng", place.geometry.location.lng());
   });
 
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: {lat: 48.8037874, lng: 2.37809900000002},
+    zoom: 12,
+    disableDefaultUI: true
+  }, { maxZoom: 10 });
+
+  findRoutes({
+    from : {
+      lng: "2.37809900000002",
+      lat: "48.8037874"
+    },
+    to : {
+      lng: "2.387552199999959",
+      lat: "48.84978859999999"
+    }
+  });
 }
 
 $("#validateRoute").on("click", function () {
@@ -61,6 +82,7 @@ $("#validateRoute").on("click", function () {
 
   findRoutes(stops);
 });
+
 
 
 $("#closePopup").on("click", function () {
