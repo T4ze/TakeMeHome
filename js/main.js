@@ -1,6 +1,9 @@
-var timeZone = 1;
-var routes = [];
-var markers = [];
+var timeZone = 1,
+    routes = [],
+    markers = [],
+    currentIndex;
+
+
 var transports = {
   "metro": "RATP",
   "tramway": "RATP",
@@ -20,8 +23,8 @@ function findRoutes(stops) {
   $.ajax({
     type: "GET",
     url: "https://api.navitia.io/v1/journeys?"
-        + "from=" + stops.from.lng + ";" + stops.from.lat
-        + "&to=" + stops.to.lng + ";" + stops.to.lat + "&",
+        + "from=" + stops.coords.from.lng + ";" + stops.coords.from.lat
+        + "&to=" + stops.coords.to.lng + ";" + stops.coords.to.lat + "&",
     dataType: 'json',
     beforeSend: function(xhr) {
       xhr.setRequestHeader("Authorization", "Basic " + btoa(navitia_token + ":"));
@@ -35,7 +38,9 @@ function findRoutes(stops) {
           duration: "",
           time_start: getTime(journey.departure_date_time),
           time_end: getTime(journey.arrival_date_time),
-          coord: stops
+          coord: stops.coords,
+          from: stops.addresses.from,
+          to: stops.addresses.to,
         };
 
         // Set route duration
@@ -105,13 +110,22 @@ function findRoutes(stops) {
         //console.log(currentRoute);
         //console.log("=====================================================");
       });
-    }
+    },
+    error: function (request, error) {
+      if (arguments[0].status) {
+        $('#tabs').append("<div class='text-center' style='padding: 15px;'>Il n'y a aucun resultat pour cet itinéraire.</div>");
+      }
+    },
   });
 }
 
 
+var saveData;
+
 function setData(index, map) {
+  currentIndex = index;
   markers = [];
+  saveData = {};
   console.log(routes[index]);
 
   // initialize
@@ -144,6 +158,48 @@ function setData(index, map) {
     $(".route-line").append(content);
 
     setPath(v.coords, map, i);
+
+
+    if (v.type.name == "street_network") {
+      console.log("walk");
+
+      $(".save-detail").append('<div id="detail-' + i + '"></div>');
+      saveData[v.coords.from.lat + "," + v.coords.from.lng] = i;
+
+      $.ajax({
+        type: "GET",
+        url: "https://maps.googleapis.com/maps/api/directions/json?origin="
+        + v.coords.from.lat + "," + v.coords.from.lng
+        + "&destination=" + v.coords.to.lat + "," + v.coords.to.lng
+        + "&mode=walking&key=AIzaSyDsTAz9LGb-CcyfMX0LXHMuQqhIs7_tSVI",
+        dataType: 'json',
+        success: function(data) {
+          var indexValue = saveData[this.url.split('=')[1].split('&')[0]];
+          var html = '<div class="col-xs-12"><div class="col-xs-6"></div><div class="col-xs-6"></div></div>';
+          var tmp = "";
+          var indication = '';
+
+          data.routes[0].legs[0].steps.forEach(function (path) {
+            console.log(path);
+            tmp += "|" + path.start_location.lat + ", " + path.start_location.lng;
+            tmp += "|" + path.end_location.lat + ", " + path.end_location.lng;
+            indication += path.html_instructions + "<br>";
+          });
+
+          //html += '<div class="col-xs-6"><img src="http://maps.googleapis.com/maps/api/staticmap?size=200x100&amp;sensor=false&amp;path=color:0xff0000ff|weight:5' + tmp + '"/></div>';
+          html += '<div class="col-xs-12">' + indication + '</div>';
+
+          $("#detail-" + indexValue).html('<div class="col-xs-12" style="padding: 15px">' + html + '</div>');
+        }
+      });
+    } else {
+      console.log("transport");
+      $(".save-detail").append('<div class="col-xs-12" style="padding: 15px"><div class="col-xs-12">'
+      + 'Prendre le ' + v.type.line.mode + " " + setGraphicTransport(v)
+      + ' en direction de <b>' + v.type.line.direction + '</b>'
+      + '</div></div>');
+    }
+
   });
 
   // add last point (arrival)
@@ -161,6 +217,8 @@ function setData(index, map) {
 
   // show content
   $(".route-detail").addClass("active");
+
+  //$(".save-detail").addClass("active");
 }
 
 function getTime(s) {
@@ -203,7 +261,6 @@ function getTransport(v) {
 */
 
 function setPath(coord, map, i) {
-  console.log(coord);
   var flightPlanCoordinates = [ coord.from, coord.to ];
   var flightPath = new google.maps.Polyline({
     path: flightPlanCoordinates,
@@ -241,3 +298,80 @@ function getRandomColor(i) {
 
   return colors[i % colors.length];
 }
+
+
+function save() {
+  var tmp = routes[currentIndex];
+
+  $('.save-detail').addClass('active');
+
+  (html2canvas($('.save-detail'), {
+    imageTimeout: 2000,
+    removeContainer: true
+  })).then(function(canvas) {
+    var dataURI = canvas.toDataURL();
+
+    var byteString = atob(dataURI.split(',')[1]);
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab);
+    for (var i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+
+    // create a blob for writing to a file
+    var blob = new Blob([ab], {type: mimeString});
+
+    // ===============================================
+    var a = document.createElement('a');
+    url = window.URL.createObjectURL(blob);
+    a.href = url;
+    a.download = "test.png";
+    //a.click();
+    var event = document.createEvent("MouseEvents");
+        event.initMouseEvent(
+                "click", true, false, window, 0, 0, 0, 0, 0
+                , false, false, false, false, 0, null
+        );
+    a.dispatchEvent(event);
+    window.URL.revokeObjectURL(url);
+    $('.save-detail').removeClass('active');
+  });
+
+};
+
+function mail() {
+  var tmp = routes[currentIndex];
+
+  var content = "Résumé de votre trajet :\n\n";
+  content += "Départ (" + tmp.time_start + ") : " + tmp.from + " à \n";
+  content += "Arrivé (" + tmp.time_end + ") :   " + tmp.to + " à \n";
+  content += "\n\n";
+
+  content += "Detail : \n\n";
+
+  var j = 1;
+  tmp.stops.forEach(function (v, i) {
+    content += j + ". ";
+
+    if (v.type.name == "street_network") {
+      content += "Marchez de " + v.from + " à " + v.to + ".";
+    } else {
+      content += "Prendre le " + v.type.line.mode + " " + v.type.line.code + " en direction de " + v.type.line.direction + ".\n";
+      j++;
+      content += j + ". ";
+      content += "Descendre à " + v.to + ".";
+    }
+
+    content += "\n";
+    j++;
+  });
+
+  content += j + ". Vous êtes arrivé.\n\n\nBon trajet !";
+
+  var formattedBody = "FirstLine \n Second Line \n Third Line";
+  var mailToLink = "mailto:x@email.com?subject=Itinéraire&body=" + encodeURIComponent(content);
+  window.location.href = mailToLink;
+
+  console.log(content);
+};

@@ -36,19 +36,25 @@ function initialize() {
   }, { maxZoom: 10 });
 
   findRoutes({
-    from : {
-      lng: "2.37809900000002",
-      lat: "48.8037874"
+    coords: {
+      from : {
+        lng: "2.37809900000002",
+        lat: "48.8037874"
+      },
+      to : {
+        lng: "2.387552199999959",
+        lat: "48.84978859999999"
+      }
     },
-    to : {
-      lng: "2.387552199999959",
-      lat: "48.84978859999999"
+    addresses: {
+      from: "140 Boulevard de Stalingrad, 94200 Ivry-sur-Seine, France",
+      to: "263 Rue du Faubourg Saint-Antoine, 75011 Paris, France",
     }
   });
 }
 
 $("#validateRoute").on("click", function () {
-  var place;
+  var placeFrom, placeTo;
   var stops = {
       from : {
         long : 0,
@@ -60,24 +66,28 @@ $("#validateRoute").on("click", function () {
       }
   };
 
-  // from
-  place = autocompleteFrom.getPlace();
-  if (!place || place.name == "")
+  placeFrom = autocompleteFrom.getPlace();
+  placeTo = autocompleteTo.getPlace();
+
+  if (!placeFrom || placeFrom.name == "" || !placeTo || placeTo.name == "")
     return;
 
-  stops.from = {
-    lng : place.geometry.location.lng(),
-    lat : place.geometry.location.lat(),
-  }
 
-  // to
-  place = autocompleteTo.getPlace();
-  if (!place || place.name == "")
-    return;
-
-  stops.to = {
-    lng : place.geometry.location.lng(),
-    lat : place.geometry.location.lat(),
+  stops = {
+    coords: {
+      from: {
+        lng : placeFrom.geometry.location.lng(),
+        lat : placeFrom.geometry.location.lat(),
+      },
+      to: {
+        lng : placeTo.geometry.location.lng(),
+        lat : placeTo.geometry.location.lat(),
+      },
+    },
+    addresses: {
+      from: placeFrom.formatted_address,
+      to: placeTo.formatted_address,
+    }
   }
 
   findRoutes(stops);

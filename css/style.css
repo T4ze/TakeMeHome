@@ -20,6 +20,7 @@ img.icon, img.metro, img.rer, img.tramway {
 }
 
 .switch {
+  color: white;
   padding: 30px 0px;
   font-size: 15px;
 }
@@ -71,16 +72,33 @@ ul#tabs {
 }
 
 .route-detail.active {
-  /*display: block;*/
   height: 100%;
 }
 
-.switch, #closePopup, #print {
+
+.save-detail {
+  display: none;
+  background-color: white;
+}
+
+.save-detail.active {
+  display: block;
+  min-height: 100%;
+  width: 540px;
+  height: auto;
+  overflow: visible;
+}
+
+.switch, #closePopup, .icon-action {
   cursor: pointer;
 }
 
+.icon-action {
+  padding: 0px 5px;
+}
+
 .header {
-  padding: 5px 0px;
+  padding: 5px 10px;
   color: white;
   background-color: #9FA8DA;
 }
