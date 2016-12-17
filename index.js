@@ -5,20 +5,21 @@ if (!process.env.NAVITIA_TOKEN) {
   process.exit(1);
 }
 
-/*
+
 var mb = menubar({
     width: 350,
     height: 400,
+    icon: 'img/icon.png',
 });
 
 mb.on('ready', function ready () {
 });
 
 mb.on('after-create-window', function ready () {
-  mb.window.openDevTools();
+  //mb.window.openDevTools();
 })
-*/
 
+/*
 
 const electron = require('electron');
 
@@ -45,3 +46,4 @@ mainWindow = new BrowserWindow({
 }
 
 app.on('ready', createWindow);
+*/
