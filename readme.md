@@ -1,9 +1,9 @@
+![Screen of the app](img/screen.png)
+
 # TakeMeHome
 
-Electron MenuBar application that allow you to find your way to home where ever
+Electron [`MenuBar`](https://github.com/maxogden/menubar) application that allow you to find your way to home where ever
 you are.
-
-Menubar: https://github.com/maxogden/menubar
 
 Works on Mac OS, Windows and some Linuxes.
 
