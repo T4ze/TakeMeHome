@@ -1,4 +1,3 @@
-![Screen of the app](img/screen.png)
 
 # TakeMeHome
 
@@ -6,6 +5,10 @@ Electron [`MenuBar`](https://github.com/maxogden/menubar) application that allow
 you are.
 
 Works on Mac OS, Windows and some Linuxes.
+
+
+![Screen of the app](img/screen.png)
+
 
 
 ## APIs
